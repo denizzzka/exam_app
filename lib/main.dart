@@ -60,6 +60,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _bookNameField = TextEditingController();
   final TextEditingController _authorField = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   int _currentRecordId = -1;
 
   @override
@@ -71,31 +72,42 @@ class _MyHomePageState extends State<MyHomePage> {
       body:
         Row(
             children: <Widget>[
-              Expanded(child:Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+              Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
 
-                children: <Widget>[
-                    TextField(
-                      controller: _bookNameField,
-                      decoration: InputDecoration(hintText: 'Book name'),
-                    ),
-                    TextField(
-                      controller: _authorField,
-                      decoration: InputDecoration(hintText: 'Author(s)'),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        IconButton(icon: Icon(Icons.add), tooltip: 'Add new book', onPressed: _addNewBookRecord,),
-                        IconButton(
-                          icon: Icon(Icons.refresh),
-                          tooltip: 'Update book info',
-                          onPressed: _currentRecordId == -1 ? null : _refreshBookInfo,
-                        ),
+                          TextFormField(
+                            controller: _bookNameField,
+                            decoration: InputDecoration(hintText: 'Book name'),
+                            validator: (s) { return s.isEmpty ? 'Empty book name is not allowed.' : null; },
+                          ),
+                          TextFormField(
+                            controller: _authorField,
+                            decoration: InputDecoration(hintText: 'Author(s)'),
+                            validator: (s) { return s.isEmpty ? 'Empty authors field is not allowed.' : null; },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              IconButton(
+                                  icon: Icon(Icons.add),
+                                  tooltip: 'Add new book',
+                                  onPressed: (){ if(_formKey.currentState.validate()) _addNewBookRecord(); }
+                                  ),
+                              IconButton(
+                                icon: Icon(Icons.refresh),
+                                tooltip: 'Update book info',
+                                onPressed: _currentRecordId == -1 ? null : (){ if(_formKey.currentState.validate()) _refreshBookInfo(); },
+                              ),
+                            ],
+                          )
                       ],
                     )
-                ],
-              )),
+                  )
+              ),
 
 
               Expanded(child:
